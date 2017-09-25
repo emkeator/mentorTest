@@ -1,28 +1,78 @@
 Answer each question in a written format
 
 1. What does semantic HTML mean?
+    Semantic HTML refers to HTML tags that are more descriptive of what they contain 
+    and the part they play on the page. Rather than using '<div>' for a header, for 
+    instance, you might use '<header>'.
 
 2. What is the box model?
+    The box model refers to each element of an HTML page being considered as a box on 
+    the page for layout and CSS, composed of the content, the padding, the border, 
+    and the margin. 
 
 3. What is the difference between IDs and Classes?
+    IDs are more specific and should only refer to one element on a page, while classes
+    are broader and can be applied to multiple elements to target them for styles or JS. 
+    Classes are targeted in CSS with "#Id" and classes with ".class"; IDs are also are 
+    higher in the hierarchy of CSS styles, so that if something is class 'box' but ID 
+    'clickMe', and there are specific styles attached to "#clickMe", they will likely 
+    override the styles of '.box'.
 
 4. What does the z-index do?
+    Z-index moves elements along the z-axis, effectively putting elements above or below 
+    others in a stack. If you were looking at all your HTML elements as a stack of papers, 
+    HTML automatically puts the first elements on the page as the bottom of the stack, and 
+    the elements at the bottom of the page on the top of the stack. The z-index in CSS lets 
+    you re-order the stack to your liking.
 
 5. Summarize what the keyword 'this' is used for?
+    'This' is used in javascript to refer to the scope of what you're working with. It can 
+    refer back to the scope that a function was created in, if you bind the function, or it 
+    can refer to the scope it's used in if you do not bind it. You can also apply it to a context.
 
 6. What is a callback?
+    A callback is a function passed into another function, which is then called within that
+    function. 
 
 7. What is a closure?
+    A closure is a function within a function, which then has access to the variable within 
+    the outer function scope even after the outer function has finished executing.
 
 8. How does prototype work?
+    Prototype allows you to access methods that are native to all versions of an object, working 
+    a little bit like an ancestor. For instance, all objects have certain native methods because 
+    even though you didn't assign those methods specifically to your object, the JS engine will 
+    look for that method on the object's prototype and use what it finds there. You could create 
+    an object that serves as a prototype for multiple instances of an object, like a car--the car 
+    prototype will have methods like .drive(), .reverse(), etc., and each new car object you make 
+    that has the car prototype will also have those methods.
 
 9. What is MVC?
+    We didn't completely cover this in my cohort, but from my previous online course in web dev I 
+    think it's similar to the MVVM (model-view-viewmodel) that I learned. Basically, you have the 
+    view that the user interacts with, and the model that is in charge of all the data and such. 
+    The viewmodel keeps these two separate and is in charge of conveying the info between the view 
+    and the model, so that data can be bound between the view and the viewmodel, while the viewmodel 
+    retrieves data from the model. I worked with Knockout.js and its observables to data bind, but 
+    since we did a crash course on angular I'm guessing the MVC is the angular term for the 
+    model-view-viewmodel separation.
 
 10. What is the component lifecycle?
+    In React, there are component lifecycle methods that you can use--when each component loads, it 
+    goes through "ComponentWillMount", to ComponentDidMount" and then it renders, and you can check 
+    if it will update/did update, and you can check if something will unmount, because the component 
+    will no longer be loaded in the browser. 
+
+    Because each component goes through lifecycles like this, especially is something is not displayed 
+    and then displays again, you have be careful where you store data so that it doesn't get wiped if 
+    a user changes pages.
 
 11. What is REST?
+    I don't recall what it stands for, but it refers to the ability to GET, POST, PATCH, DELETE, and PUT, 
+    among others, with APIs and http requests. 
 
 12. Name three ways of getting data from the URL using express
+    You can get data from the req.body, from the req.params, from a req.query.
 
 create table users (
 id serial,
@@ -33,9 +83,52 @@ email varchar(255)
 12. Given the Schema above, write the following four basic CRUD db queries using postgres syntax
 
 -Get all users:
+app.get('/api/users', (req, res) => {
+    app.get('db').getUsers().then(users => {
+        res.status(200).send(users);
+    });
+});
+
+db/getUsers.sql:
+select * from users;
 
 -Create a new user with the name of 'your name' and an email of 'fake@fake.com':
+//req.body = {"name": "Emily", "email": "fake@fake.com"}
+
+app.post('/api/users', (req, res) => {
+    let {name, email} = req.body
+    app.get('db').addUser(name, email).then(users => {
+        res.status(200).send(users);
+    });
+});
+
+db/addUser.sql:
+insert into users (name, email) values ($1, $2);
 
 -Update the newly created user's name to 'Bobby Boy':
+//req.body = {"name": "Bobby Boy", "email": "fake@fake.com"}
+
+app.patch('/api/users', (req, res) => {
+    let {name, email} = req.body
+    app.get('db').updateUserName(email, name).then(users => {
+        res.status(200).send(users);
+    });
+});
+
+db/updateUserName.sql:
+update users
+set name = $2
+where email = $1;
 
 -Delete the newly updated user:
+//req.body = {"email": "fake@fake.com"}
+
+app.delete('/api/users', (req, res) => {
+    app.get('db').deleteUser(req.body.email).then(users => {
+        res.status(200).send(users);
+    });
+});
+
+db/deleteUser.sql:
+delete from users 
+where email = $1;
